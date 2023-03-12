@@ -2,7 +2,7 @@ import PyInstaller.__main__ as PyInst, os, pkgutil, shutil, sys, platform
 from modulefinder import ModuleFinder
 from pathlib      import Path
 
-VERSION = "2023.3.12"
+VERSION = "2023.3.12.1"
 
 source           = "source"
 destination      = "destination"
@@ -95,7 +95,7 @@ class Ianthe:
 
             del self.config[osx][key]
             
-    def execute(self):
+    def execute(self, export = False):
         os.chdir(HOME_DIR)
     
         print("Listing installed modules...")
@@ -114,6 +114,9 @@ class Ianthe:
         print("Excluding unused modules...")
 
         workPath = os.path.join(Ianthe.PATH, "tmp")
+
+        if os.path.exists(workPath):
+            shutil.rmtree(workPath)
 
         args = [
             f"--workpath={workPath}",
@@ -381,6 +384,10 @@ class Ianthe:
         if len(self.config) != 0:
             print('Unrecognized options in project file.\nBuild aborted.')
             return
+        
+        if export:
+            print("Final arguments:\n", str(args))
+            return
             
         print("Done. Calling PyInstaller.")
         PyInst.run(args)
@@ -402,8 +409,13 @@ class Ianthe:
         print("Done.")
 
 def _main():
+    if "--export" in sys.argv:
+        sys.argv.remove("--export")
+        export = True
+    else: export = False
+
     if len(sys.argv) < 2:
         quit()
     
-    Ianthe(sys.argv[1]).execute()
+    Ianthe(sys.argv[1]).execute(export)
     

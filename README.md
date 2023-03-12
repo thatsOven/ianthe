@@ -9,6 +9,8 @@ pip install ianthe
 ```
 python -m ianthe project_file.iproj
 ```
+# Command line arguments
+- `--export`: Prints out the generated PyInstaller arguments and quits.
 # Python usage
 ```py
 from ianthe import Ianthe
