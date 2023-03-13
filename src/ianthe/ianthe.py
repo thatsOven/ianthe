@@ -2,7 +2,7 @@ import PyInstaller.__main__ as PyInst, os, pkgutil, shutil, sys, platform
 from modulefinder import ModuleFinder
 from pathlib      import Path
 
-VERSION = "2023.3.12.1"
+VERSION = "2023.3.13"
 
 source           = "source"
 destination      = "destination"
@@ -43,6 +43,15 @@ pyinstaller_args = "pyinstaller-args"
 yes              = True
 no               = False
 
+BASE_SCRIPT = """from os import chdir
+from pathlib import Path
+chdir(str(Path(__file__).parent.absolute()))
+from ianthe import Ianthe
+ianthe = Ianthe()
+ianthe.config={}
+ianthe.execute()
+"""
+
 HOME_DIR = os.getcwd()
 PLATFORM = platform.system()
 
@@ -73,6 +82,14 @@ class Ianthe:
     def __readFile(self, fileName):
         with open(fileName, "r", encoding = "utf-8") as f:
             return f.read()
+        
+    def generateScript(self):
+        os.chdir(HOME_DIR)
+
+        with open("build.py", "w", encoding = "utf-8") as f:
+            f.write(BASE_SCRIPT.format(str(self.config)))
+
+        print(f"Build script saved to {os.path.join(HOME_DIR, 'build.py')}.")
         
     def __handleCollect(self, key, args, command):
         if key in self.config[collect]:
@@ -409,13 +426,21 @@ class Ianthe:
         print("Done.")
 
 def _main():
-    if "--export" in sys.argv:
+    generateScrip = False
+    export        = False
+
+    if "--generate-build-script" in sys.argv:
+        sys.argv.remove("--generate-build-script")
+        generateScrip = True
+    elif "--export" in sys.argv:
         sys.argv.remove("--export")
         export = True
-    else: export = False
 
     if len(sys.argv) < 2:
         quit()
     
-    Ianthe(sys.argv[1]).execute(export)
+    if generateScrip:
+        Ianthe(sys.argv[1]).generateScript()
+    else:
+        Ianthe(sys.argv[1]).execute(export)
     

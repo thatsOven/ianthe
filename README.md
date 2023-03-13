@@ -11,6 +11,7 @@ python -m ianthe project_file.iproj
 ```
 # Command line arguments
 - `--export`: Prints out the generated PyInstaller arguments and quits.
+- `--generate-build-script`: Generates a Python script that executes the given project file.
 # Python usage
 ```py
 from ianthe import Ianthe
