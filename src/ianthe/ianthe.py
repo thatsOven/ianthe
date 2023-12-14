@@ -2,7 +2,7 @@ import PyInstaller.__main__ as PyInst, os, pkgutil, shutil, sys, platform
 from modulefinder import ModuleFinder
 from pathlib      import Path
 
-VERSION = "2023.3.13"
+VERSION = "2023.12.14"
 
 source           = "source"
 destination      = "destination"
@@ -252,7 +252,7 @@ class Ianthe:
         
         os.mkdir(workPath)
         if icon in self.config:
-            iconName = os.path.split(self.config[icon])[1]
+            iconName = os.path.basename(self.config[icon])
             shutil.copy(self.config[icon], os.path.join(workPath, iconName))
 
             args.append(f"--icon={iconName}")
@@ -395,7 +395,7 @@ class Ianthe:
         else: onefile_ = False
 
         args.append(self.config[source])
-        dirName = self.config[source].split(".")[0]
+        dirName = os.path.basename(self.config[source]).split(".")[0]
         del self.config[source]
 
         if len(self.config) != 0:
@@ -415,8 +415,8 @@ class Ianthe:
         print("Copying data...")
         for item in toCopy:
             if onefile_:
-                  joined = os.path.join(distPath, item[1])
-            else: joined = os.path.join(distPath, dirName, item[1])
+                  joined = os.path.join(distPath, os.path.basename(item[1]))
+            else: joined = os.path.join(distPath, dirName, os.path.basename(item[1]))
 
             if item[0] == file:
                 shutil.copy(item[1], joined)
