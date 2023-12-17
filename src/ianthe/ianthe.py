@@ -2,7 +2,7 @@ import PyInstaller.__main__ as PyInst, os, pkgutil, shutil, sys, platform
 from modulefinder import ModuleFinder
 from pathlib      import Path
 
-VERSION = "2023.12.14"
+VERSION = "2023.12.17"
 
 source           = "source"
 destination      = "destination"
@@ -40,10 +40,11 @@ bundle_id        = "bundle-id"
 entitlements     = "entitlements"
 codesign_id      = "codesign-id"
 pyinstaller_args = "pyinstaller-args"
+scan             = "scan"
 yes              = True
 no               = False
 
-BASE_SCRIPT = """from os import chdir
+_BASE_SCRIPT = """from os import chdir
 from pathlib import Path
 chdir(str(Path(__file__).parent.absolute()))
 from ianthe import Ianthe
@@ -51,6 +52,8 @@ ianthe = Ianthe()
 ianthe.config={}
 ianthe.execute()
 """
+
+_PY_STDLIB = {x: None for x in sys.stdlib_module_names}
 
 HOME_DIR = os.getcwd()
 PLATFORM = platform.system()
@@ -87,7 +90,7 @@ class Ianthe:
         os.chdir(HOME_DIR)
 
         with open("build.py", "w", encoding = "utf-8") as f:
-            f.write(BASE_SCRIPT.format(str(self.config)))
+            f.write(_BASE_SCRIPT.format(str(self.config)))
 
         print(f"Build script saved to {os.path.join(HOME_DIR, 'build.py')}.")
         
@@ -118,15 +121,19 @@ class Ianthe:
         print("Listing installed modules...")
         installed = [x.name for x in pkgutil.iter_modules()]
 
-        print("Looking for modules used by source...")
-        try:
-            modFinder = ModuleFinder()
-            modFinder.run_script(self.config[source])
-        except Exception as e:
-            print("Something went wrong. Error:\n", str(e))
-            return
-        
-        used = modFinder.modules
+        if scan in self.config and not self.config[scan]:
+            print("Scan is disabled. Including Python standard library.")
+            used = _PY_STDLIB
+        else:
+            print("Looking for modules used by source...")
+            try:
+                modFinder = ModuleFinder()
+                modFinder.run_script(self.config[source])
+            except Exception as e:
+                print("Something went wrong. Error:\n", str(e))
+                return
+            
+            used = modFinder.modules
         
         print("Excluding unused modules...")
 

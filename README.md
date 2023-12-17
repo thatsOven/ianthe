@@ -34,6 +34,8 @@ Specifies which file should be built. Requires a `str` or a path-like argument.
 Specifies where the result should be saved. Requires a `str` or a path-like argument.
 ### `onefile` or `"onefile"`
 Equivalent to PyInstaller's `--onefile` argument. Specifies whether a single executable should be built instead of a folder. Requires a `bool` argument (`True`, `False`, `yes` or `no`)
+### `scan` or `"scan"`
+Enables (`True` or `yes`) or disables (`False` or `no`) used modules scanning and keeps Python's standard library. Default is `True`.
 ### `keep` or `"keep"`
 Tells Ianthe to keep some specific modules. Useful when the result of an application built using Ianthe is broken due to some missing modules that Ianthe can't find. Requires a `list` argument containing module names.
 ### `copy` or `"copy"`
