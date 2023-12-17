@@ -134,6 +134,9 @@ class Ianthe:
                 return
             
             used = modFinder.modules
+
+        if scan in self.config:
+            del self.config[scan]
         
         print("Excluding unused modules...")
 
