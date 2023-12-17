@@ -2,7 +2,7 @@ import PyInstaller.__main__ as PyInst, os, pkgutil, shutil, sys, platform
 from modulefinder import ModuleFinder
 from pathlib      import Path
 
-VERSION = "2023.12.17"
+VERSION = "2023.12.17.1"
 
 source           = "source"
 destination      = "destination"
